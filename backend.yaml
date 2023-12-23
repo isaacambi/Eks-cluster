@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: backend-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-deployment
+  template:
+    metadata:
+      labels:
+        app: backend-deployment
+    spec:
+      containers:
+      - name: eks/cluster2
+        image: sheriffexcel/backend-app:latest
+        ports:
+        - containerPort: 3000
+
+
+---
+
+env:
+        - name: AUTH_API_ADDRESSS
+          valueFrom:
+            configMapKeyRef:
+              name: auth-config
+              key: middle-ware
+
+        - name: MONGODB_CONNECTION_URI  # middle ware auth
+          valueFrom:
+            secretKeyRef:
+              name: mongodb
+              key:  mongourl
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: nodePort
+  selector:
+    app: backend-deployment
+  ports:
+  - port: 5000
+    targetPort: 3000

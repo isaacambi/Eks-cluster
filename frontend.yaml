@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deployment
+  template:
+    metadata:
+      labels:
+        app: deployment
+    spec:
+      containers:
+      - name: eks-frontend
+        image: ambiisaac/eks-frontend
+        ports:
+        - containerPort: 80
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app.kubernetes.io/name: deployment
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
